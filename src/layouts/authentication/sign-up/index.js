@@ -1,6 +1,6 @@
 /**
 =========================================================
-* Material Dashboard 2 React - v2.2.0
+* sample React - v2.2.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
@@ -20,7 +20,7 @@ import { Link } from "react-router-dom";
 import Card from "@mui/material/Card";
 import Checkbox from "@mui/material/Checkbox";
 
-// Material Dashboard 2 React components
+// sample React components
 import SampleBox from "components/SampleBox";
 import SampleTypography from "components/SampleTypography";
 import SampleInput from "components/SampleInput";

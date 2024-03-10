@@ -1,6 +1,6 @@
 /**
 =========================================================
-* Material Dashboard 2 React - v2.2.0
+* sample React - v2.2.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
@@ -23,7 +23,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 
-// Material Dashboard 2 React components
+// sample React components
 import SampleBox from "components/SampleBox";
 import SampleTypography from "components/SampleTypography";
 import SampleAlert from "components/SampleAlert";
@@ -31,7 +31,7 @@ import SampleButton from "components/SampleButton";
 import SampleSnackbar from "components/SampleSnackbar";
 import { FileUploader } from "components/FileUploader";
 
-// Material Dashboard 2 React example components
+// sample React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";

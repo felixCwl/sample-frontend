@@ -1,6 +1,6 @@
 /**
 =========================================================
-* Material Dashboard 2 React - v2.2.0
+* sample React - v2.2.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
@@ -29,7 +29,7 @@ import Icon from "@mui/material/Icon";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import FacebookIcon from "@mui/icons-material/Facebook";
 
-// Material Dashboard 2 React components
+// sample React components
 import SampleBox from "components/SampleBox";
 import SampleTypography from "components/SampleTypography";
 import SampleButton from "components/SampleButton";
@@ -37,7 +37,7 @@ import SampleButton from "components/SampleButton";
 // Custom styles for the Configurator
 import ConfiguratorRoot from "examples/Configurator/ConfiguratorRoot";
 
-// Material Dashboard 2 React context
+// sample React context
 import {
   useMaterialUIController,
   setOpenConfigurator,

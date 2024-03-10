@@ -1,6 +1,6 @@
 /**
 =========================================================
-* Material Dashboard 2 React - v1.0.0
+* sample React - v1.0.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/soft-ui-dashboard-pro-react
@@ -21,7 +21,7 @@ import PropTypes from "prop-types";
 // Custom styles for SampleButton
 import SampleButtonRoot from "components/SampleButton/SampleButtonRoot";
 
-// Material Dashboard 2 React contexts
+// sample React contexts
 import { useMaterialUIController } from "context";
 
 const SampleButton = forwardRef(
