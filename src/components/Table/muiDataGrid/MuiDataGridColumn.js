@@ -1,0 +1,21 @@
+class MuiDataGridColumn {
+  constructor(
+    field = "",
+    headerName = "",
+    width = 50,
+    type = "",
+    align = "center",
+    editable = false,
+    valueOptions = []
+  ) {
+    this.field = field;
+    this.headerName = headerName;
+    this.width = width;
+    this.type = type;
+    this.align = align;
+    this.editable = editable;
+    this.valueOptions = valueOptions;
+  }
+}
+
+export default MuiDataGridColumn;
