@@ -199,7 +199,7 @@ function ClassClassification() {
 
   const [rows, setRows] = useState(inputRows);
   const [rowModesModel, setRowModesModel] = useState({});
-  const [responseRows, setResponseRows] = useState({});
+  const [responseRows, setResponseRows] = useState([]);
 
   const handleFile = (file) => {
     console.log(file);
@@ -364,7 +364,25 @@ function ClassClassification() {
           }}
         >
           <DataGrid
-            rows={responseRows}
+            rows={
+              responseRows.length > 0
+                ? responseRows
+                : [
+                    {
+                      originalGrade: "",
+                      newGrade: "",
+                      studentClassRank: "",
+                      studentGradeRank: "",
+                      originalClassName: "",
+                      newClassName: "",
+                      studentEnglishName: "",
+                      studentChineseName: "",
+                      studentGender: "",
+                      studentDisciple: "",
+                      remark: "",
+                    },
+                  ]
+            }
             columns={[
               new MuiDataGridColumn(
                 "originalGrade",
@@ -415,15 +433,6 @@ function ClassClassification() {
               new MuiDataGridColumn(
                 "studentEnglishName",
                 "studentEnglishName",
-                100,
-                "text",
-                "center",
-                false,
-                []
-              ),
-              new MuiDataGridColumn(
-                "studentChineseName",
-                "studentChineseName",
                 100,
                 "text",
                 "center",
