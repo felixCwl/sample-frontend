@@ -48,6 +48,8 @@ import {
   DataGrid,
   GridToolbar,
   GridToolbarContainer,
+  GridCsvExportOptions,
+  GridToolbarExport,
   GridActionsCellItem,
   GridRowEditStopReasons,
 } from "@mui/x-data-grid";
@@ -63,6 +65,22 @@ const roles = ["Market", "Finance", "Development"];
 const randomRole = () => {
   return randomArrayItem(roles);
 };
+
+function CustomizeGridToolBarExport() {
+  return (
+    <GridToolbarExport
+      csvOptions={{
+        fileName: "customerDataBase",
+        delimiter: ";",
+        utf8WithBom: true,
+      }}
+    />
+  );
+}
+
+function CustomizeGridToolBar() {
+  return <GridToolbar GridCsvExportOptions={CustomizeGridToolBarExport}></GridToolbar>;
+}
 
 function EditToolbar(props) {
   const { setRows, setRowModesModel } = props;
@@ -103,6 +121,7 @@ function ClassClassification() {
   const [file, setFile] = useState(null);
   const classOutputNumberArray = [];
   const classOutputNameArray = [];
+  const rankLimitNumberArray = [];
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -151,11 +170,32 @@ function ClassClassification() {
     handleSubmit(event);
   };
 
+  const handleClearData = (event) => {
+    setResponseRows([
+      {
+        className: "",
+        classNumber: "",
+        studentEnglishName: "",
+        studentChineseName: "",
+        studentGender: "",
+        studentDisciple: "",
+        studentClassRank: "",
+        studentGradeRank: "",
+        remark: "",
+        newClassName: "",
+      },
+    ]);
+  };
+
   for (let i = 1; i <= 7; i++) {
     classOutputNumberArray.push(i);
   }
   for (let i = 0; i <= 6; i++) {
     classOutputNameArray.push(String.fromCharCode(65 + i));
+  }
+
+  for (let i = 1; i <= 50; i++) {
+    rankLimitNumberArray.push(i);
   }
 
   const inputRows = [
@@ -164,36 +204,42 @@ function ClassClassification() {
       grade: "1",
       numberOfClass: classOutputNumberArray[0],
       firstClassName: "A",
+      rankLimit: rankLimitNumberArray[0],
     },
     {
       id: 2,
       grade: "2",
       numberOfClass: classOutputNumberArray[0],
       firstClassName: "A",
+      rankLimit: rankLimitNumberArray[0],
     },
     {
       id: 3,
       grade: "3",
       numberOfClass: classOutputNumberArray[0],
       firstClassName: "A",
+      rankLimit: rankLimitNumberArray[0],
     },
     {
       id: 4,
       grade: "4",
       numberOfClass: classOutputNumberArray[0],
       firstClassName: "A",
+      rankLimit: rankLimitNumberArray[0],
     },
     {
       id: 5,
       grade: "5",
       numberOfClass: classOutputNumberArray[0],
       firstClassName: "A",
+      rankLimit: rankLimitNumberArray[0],
     },
     {
       id: 6,
       grade: "6",
       numberOfClass: classOutputNumberArray[0],
       firstClassName: "A",
+      rankLimit: rankLimitNumberArray[0],
     },
   ];
 
@@ -220,36 +266,36 @@ function ClassClassification() {
     var grade1ExpectedInputMap = new ClassGradeExpectedInputModel(
       rows[0].numberOfClass,
       rows[0].firstClassName,
-      50
+      rows[0].rankLimit
     );
 
     var grade2ExpectedInputMap = new ClassGradeExpectedInputModel(
       rows[1].numberOfClass,
       rows[1].firstClassName,
-      50
+      rows[1].rankLimit
     );
 
     var grade3ExpectedInputMap = new ClassGradeExpectedInputModel(
       rows[2].numberOfClass,
       rows[2].firstClassName,
-      50
+      rows[2].rankLimit
     );
     var grade4ExpectedInputMap = new ClassGradeExpectedInputModel(
       rows[3].numberOfClass,
       rows[3].firstClassName,
-      50
+      rows[3].rankLimit
     );
 
     var grade5ExpectedInputMap = new ClassGradeExpectedInputModel(
       rows[4].numberOfClass,
       rows[4].firstClassName,
-      50
+      rows[4].rankLimit
     );
 
     var grade6ExpectedInputMap = new ClassGradeExpectedInputModel(
       rows[5].numberOfClass,
       rows[5].firstClassName,
-      50
+      rows[5].rankLimit
     );
 
     var classDivisionRequestBody = new ClassClassificationRequestModel(
@@ -337,6 +383,15 @@ function ClassClassification() {
                   true,
                   classOutputNameArray
                 ),
+                new MuiDataGridColumn(
+                  "rankLimit",
+                  "Rank Limit",
+                  200,
+                  "singleSelect",
+                  "center",
+                  true,
+                  rankLimitNumberArray
+                ),
               ]}
               //editMode="row"
               rowModesModel={rowModesModel}
@@ -346,137 +401,120 @@ function ClassClassification() {
             />
           </Box>
         </Grid>
+
         <Grid item xs={3}>
-          <SampleButton color="primary" onClick={handleButtonClick}>
+          <SampleButton color="primary" onClick={handleButtonClick} disabled={!file}>
             Generate
           </SampleButton>
         </Grid>
 
-        <Box
-          sx={{
-            width: "100%",
-            "& .actions": {
-              color: "text.primary",
-            },
-            "& .textPrimary": {
-              color: "text.primary",
-            },
-          }}
-        >
-          <DataGrid
-            rows={
-              responseRows.length > 0
-                ? responseRows
-                : [
-                    {
-                      originalGrade: "",
-                      newGrade: "",
-                      studentClassRank: "",
-                      studentGradeRank: "",
-                      originalClassName: "",
-                      newClassName: "",
-                      studentEnglishName: "",
-                      studentChineseName: "",
-                      studentGender: "",
-                      studentDisciple: "",
-                      remark: "",
-                    },
-                  ]
-            }
-            columns={[
-              new MuiDataGridColumn(
-                "originalGrade",
-                "originalGrade",
-                100,
-                "text",
-                "center",
-                false,
-                []
-              ),
-              new MuiDataGridColumn("newGrade", "newGrade", 100, "text", "center", false, []),
-              new MuiDataGridColumn(
-                "studentClassRank",
-                "studentClassRank",
-                100,
-                "text",
-                "center",
-                false,
-                []
-              ),
-              new MuiDataGridColumn(
-                "studentGradeRank",
-                "studentGradeRank",
-                100,
-                "text",
-                "center",
-                false,
-                []
-              ),
-              new MuiDataGridColumn(
-                "originalClassName",
-                "originalClassName",
-                100,
-                "text",
-                "center",
-                false,
-                []
-              ),
-              new MuiDataGridColumn(
-                "newClassName",
-                "newClassName",
-                100,
-                "text",
-                "center",
-                false,
-                []
-              ),
-              new MuiDataGridColumn(
-                "studentEnglishName",
-                "studentEnglishName",
-                100,
-                "text",
-                "center",
-                false,
-                []
-              ),
-              new MuiDataGridColumn(
-                "studentChineseName",
-                "studentChineseName",
-                100,
-                "text",
-                "center",
-                false,
-                []
-              ),
-              new MuiDataGridColumn(
-                "studentGender",
-                "studentGender",
-                100,
-                "text",
-                "center",
-                false,
-                []
-              ),
-              new MuiDataGridColumn(
-                "studentDisciple",
-                "studentDisciple",
-                100,
-                "text",
-                "center",
-                false,
-                []
-              ),
-              new MuiDataGridColumn("remark", "remark", 100, "text", "center", false, []),
-            ]}
-            getRowId={(row) => row.newGrade + row.studentChineseName}
-            //editMode="row"
-            slots={{ toolbar: GridToolbar }}
-            rowModesModel={rowModesModel}
-            onRowModesModelChange={handleRowModesModelChange}
-            onRowEditStop={handleRowEditStop}
-            processRowUpdate={processRowUpdate}
-          />
-        </Box>
+        <Grid item xs={3}>
+          <SampleButton color="primary" onClick={handleClearData}>
+            Clear Data
+          </SampleButton>
+        </Grid>
+
+        <Grid item xs={3}>
+          <Box
+            sx={{
+              width: "100%",
+              "& .actions": {
+                color: "text.primary",
+              },
+              "& .textPrimary": {
+                color: "text.primary",
+              },
+            }}
+          >
+            <DataGrid
+              rows={
+                responseRows.length > 0
+                  ? responseRows
+                  : [
+                      {
+                        className: "",
+                        classNumber: "",
+                        studentEnglishName: "",
+                        studentChineseName: "",
+                        studentGender: "",
+                        studentDisciple: "",
+                        studentClassRank: "",
+                        studentGradeRank: "",
+                        remark: "",
+                        newClassName: "",
+                      },
+                    ]
+              }
+              columns={[
+                new MuiDataGridColumn("className", "CLASS", 100, "text", "center", false, []),
+                new MuiDataGridColumn("classNumber", "CLASS NO", 100, "text", "center", false, []),
+                new MuiDataGridColumn(
+                  "studentEnglishName",
+                  "eng_name",
+                  100,
+                  "text",
+                  "center",
+                  false,
+                  []
+                ),
+                new MuiDataGridColumn(
+                  "studentChineseName",
+                  "chi_name",
+                  100,
+                  "text",
+                  "center",
+                  false,
+                  []
+                ),
+                new MuiDataGridColumn("studentGender", "sex", 100, "text", "center", false, []),
+                new MuiDataGridColumn(
+                  "studentDisciple",
+                  "2_discip",
+                  100,
+                  "text",
+                  "center",
+                  false,
+                  []
+                ),
+                new MuiDataGridColumn(
+                  "studentClassRank",
+                  "3_rank_class",
+                  100,
+                  "text",
+                  "center",
+                  false,
+                  []
+                ),
+                new MuiDataGridColumn(
+                  "studentGradeRank",
+                  "3_rank_all",
+                  100,
+                  "text",
+                  "center",
+                  false,
+                  []
+                ),
+                new MuiDataGridColumn("remark", "Remarks", 100, "text", "center", false, []),
+                new MuiDataGridColumn(
+                  "newClassName",
+                  "NEW CLASS",
+                  100,
+                  "text",
+                  "center",
+                  false,
+                  []
+                ),
+              ]}
+              getRowId={(row) => row.newGrade + row.studentChineseName}
+              //editMode="row"
+              slots={{ toolbar: CustomizeGridToolBar }}
+              rowModesModel={rowModesModel}
+              onRowModesModelChange={handleRowModesModelChange}
+              onRowEditStop={handleRowEditStop}
+              processRowUpdate={processRowUpdate}
+            />
+          </Box>
+        </Grid>
       </Grid>
       <Footer />
     </DashboardLayout>

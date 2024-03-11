@@ -71,6 +71,7 @@ SampleButton.propTypes = {
   circular: PropTypes.bool,
   iconOnly: PropTypes.bool,
   children: PropTypes.node.isRequired,
+  disabled: PropTypes.bool,
 };
 
 export default SampleButton;

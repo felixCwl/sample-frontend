@@ -285,60 +285,6 @@ function Configurator() {
           <Switch checked={darkMode} onChange={handleDarkMode} />
         </SampleBox>
         <Divider />
-        <SampleBox mt={3} mb={2}>
-          <SampleButton
-            component={Link}
-            href="https://www.creative-tim.com/learning-lab/react/quick-start/material-dashboard/"
-            target="_blank"
-            rel="noreferrer"
-            color={darkMode ? "light" : "dark"}
-            variant="outlined"
-            fullWidth
-          >
-            view documentation
-          </SampleButton>
-        </SampleBox>
-        <SampleBox display="flex" justifyContent="center">
-          <GitHubButton
-            href="https://github.com/creativetimofficial/material-dashboard-react"
-            data-icon="octicon-star"
-            data-size="large"
-            data-show-count="true"
-            aria-label="Star creativetimofficial/material-dashboard-react on GitHub"
-          >
-            Star
-          </GitHubButton>
-        </SampleBox>
-        <SampleBox mt={2} textAlign="center">
-          <SampleBox mb={0.5}>
-            <SampleTypography variant="h6">Thank you for sharing!</SampleTypography>
-          </SampleBox>
-
-          <SampleBox display="flex" justifyContent="center">
-            <SampleBox mr={1.5}>
-              <SampleButton
-                component={Link}
-                href="//twitter.com/intent/tweet?text=Check%20Material%20Dashboard%20React%20made%20by%20%40CreativeTim%20%23webdesign%20%23dashboard%20%23react%20%mui&url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fmaterial-dashboard-react"
-                target="_blank"
-                rel="noreferrer"
-                color="dark"
-              >
-                <TwitterIcon />
-                &nbsp; Tweet
-              </SampleButton>
-            </SampleBox>
-            <SampleButton
-              component={Link}
-              href="https://www.facebook.com/sharer/sharer.php?u=https://www.creative-tim.com/product/material-dashboard-react"
-              target="_blank"
-              rel="noreferrer"
-              color="dark"
-            >
-              <FacebookIcon />
-              &nbsp; Share
-            </SampleButton>
-          </SampleBox>
-        </SampleBox>
       </SampleBox>
     </ConfiguratorRoot>
   );
