@@ -161,7 +161,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
           </SampleTypography>
         </SampleBox>
         <SampleBox component={NavLink} to="/" display="flex" alignItems="center">
-          {brand && <SampleBox component="img" src={brand} alt="Brand" width="2rem" />}
+          {brand && <SampleBox src={brand} alt="Brand" width="2rem" />}
           <SampleBox
             width={!brandName && "100%"}
             sx={(theme) => sidenavLogoLabel(theme, { miniSidenav })}

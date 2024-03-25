@@ -1,20 +1,6 @@
-/**
-=========================================================
-* sample React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 import { useState } from "react";
 import { useRef } from "react";
+import { CSVLink } from "react-csv";
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -37,12 +23,13 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import ClassClassificationRequestModel from "components/request/classClassification/ClassClassificationRequestModel";
 import ClassGradeExpectedInputModel from "components/request/classClassification/ClassGradeExpectedInputModel";
-import { Container } from "@mui/material";
+import { Container, Icon } from "@mui/material";
 import DataTable from "components/Table/TableRoot";
 import TableCustomeColumn from "components/Table/TableCustomeColumn";
 import MuiDataGridRoot from "components/Table/muiDataGrid/MuiDataGridRoot";
 import MuiDataGridColumn from "components/Table/muiDataGrid/MuiDataGridColumn";
 import PropTypes from "prop-types";
+import { useMaterialUIController } from "context";
 import {
   GridRowModes,
   DataGrid,
@@ -52,6 +39,9 @@ import {
   GridToolbarExport,
   GridActionsCellItem,
   GridRowEditStopReasons,
+  GridToolbarColumnsButton,
+  GridToolbarFilterButton,
+  GridToolbarDensitySelector,
 } from "@mui/x-data-grid";
 import {
   randomCreatedDate,
@@ -66,57 +56,77 @@ const randomRole = () => {
   return randomArrayItem(roles);
 };
 
-function CustomizeGridToolBarExport() {
-  return (
-    <GridToolbarExport
-      csvOptions={{
-        fileName: "customerDataBase",
-        delimiter: ";",
-        utf8WithBom: true,
-      }}
-    />
-  );
-}
+function CustomDataGrid(props) {
+  const { responseRows, setResponseRows } = props;
+  const [csvData, setCsvData] = useState([]);
 
-function CustomizeGridToolBar() {
-  return <GridToolbar GridCsvExportOptions={CustomizeGridToolBarExport}></GridToolbar>;
-}
-
-function EditToolbar(props) {
-  const { setRows, setRowModesModel } = props;
-
-  const handleClick = () => {
-    const id = randomId();
-    setRows((oldRows) => [...oldRows, { id, name: "", age: "", isNew: true }]);
-    setRowModesModel((oldModel) => ({
-      ...oldModel,
-      [id]: { mode: GridRowModes.Edit, fieldToFocus: "name" },
+  const downloadCsv = () => {
+    const formattedData = responseRows.map((row) => ({
+      // Map the row data to match the CSV format
+      CLASS: row.className,
+      "CLASS NO": row.classNumber,
+      eng_name: row.studentEnglishName,
+      chi_name: row.studentChineseName,
+      sex: row.sex,
+      "2_discip": row.studentDisciple,
+      "3_rank_class": row.studentClassRank,
+      "3_rank_all": row.studentGradeRank,
+      Remarks: row.remark,
+      "NEW CLASS": row.newClassName,
+      // Map other fields as needed
     }));
+    setCsvData(formattedData);
   };
 
   return (
     <GridToolbarContainer>
-      <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-        Add record
+      <GridToolbarColumnsButton />
+      <GridToolbarFilterButton />
+      <GridToolbarDensitySelector slotProps={{ tooltip: { title: "Change density" } }} />
+      <GridToolbarExport
+        csvOptions={{
+          encoding: "utf-8-bom",
+        }}
+      />
+      {/* <Button onClick={downloadCsv}>
+        <Icon>download</Icon>
+      </Button> */}
+      {
+        <CSVLink onClick={downloadCsv} data={csvData} filename="export.csv" encoding="utf-8">
+          Download
+        </CSVLink>
+      }
+    </GridToolbarContainer>
+  );
+}
+
+function CustomToolbar() {
+  return (
+    <GridToolbarContainer>
+      <GridToolbarColumnsButton />
+      <GridToolbarFilterButton />
+      <GridToolbarDensitySelector slotProps={{ tooltip: { title: "Change density" } }} />
+      <GridToolbarExport
+        csvOptions={{
+          encoding: "utf-8-bom",
+        }}
+      />
+      <Button onClick={console.log()}>
+        <Icon fontSize="medium" color="inherit">
+          download
+        </Icon>
+        Download
       </Button>
+      <CSVLink data={csvData} filename="export.csv" encoding="utf-8">
+        Download CSV
+      </CSVLink>
     </GridToolbarContainer>
   );
 }
 
 function ClassClassification() {
-  const [successSB, setSuccessSB] = useState(false);
-  const [infoSB, setInfoSB] = useState(false);
-  const [warningSB, setWarningSB] = useState(false);
-  const [errorSB, setErrorSB] = useState(false);
-
-  const openSuccessSB = () => setSuccessSB(true);
-  const closeSuccessSB = () => setSuccessSB(false);
-  const openInfoSB = () => setInfoSB(true);
-  const closeInfoSB = () => setInfoSB(false);
-  const openWarningSB = () => setWarningSB(true);
-  const closeWarningSB = () => setWarningSB(false);
-  const openErrorSB = () => setErrorSB(true);
-  const closeErrorSB = () => setErrorSB(false);
+  const [controller] = useMaterialUIController();
+  const { darkMode, sidenavColor } = controller;
   const [fileName, setFileName] = useState("");
   const [file, setFile] = useState(null);
   const classOutputNumberArray = [];
@@ -330,6 +340,8 @@ function ClassClassification() {
     console.log(responseRows);
   };
 
+  const downloadCvs = () => {};
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -362,7 +374,15 @@ function ClassClassification() {
             }}
           >
             <DataGrid
+              color={darkMode ? "white" : "secondary"}
               rows={rows}
+              sx={{
+                "& .MuiDataGrid-columnHeader, & .MuiDataGrid-cell": {
+                  //backgroundColor: "blue",
+                  color: darkMode ? "grey" : "secondary",
+                  fontWeight: 700,
+                },
+              }}
               columns={[
                 new MuiDataGridColumn("grade", "Grade", 100, "text", "center", false, []),
                 new MuiDataGridColumn(
@@ -403,13 +423,13 @@ function ClassClassification() {
         </Grid>
 
         <Grid item xs={3}>
-          <SampleButton color="primary" onClick={handleButtonClick} disabled={!file}>
+          <SampleButton color={sidenavColor} onClick={handleButtonClick} disabled={!file}>
             Generate
           </SampleButton>
         </Grid>
 
         <Grid item xs={3}>
-          <SampleButton color="primary" onClick={handleClearData}>
+          <SampleButton color={sidenavColor} onClick={handleClearData}>
             Clear Data
           </SampleButton>
         </Grid>
@@ -427,6 +447,14 @@ function ClassClassification() {
             }}
           >
             <DataGrid
+              sx={{
+                "& .MuiDataGrid-columnHeader, & .MuiDataGrid-cell": {
+                  //backgroundColor: "blue",
+                  color: darkMode ? "grey" : "secondary",
+                  fontWeight: 700,
+                },
+              }}
+              color={darkMode ? "white" : "secondary"}
               rows={
                 responseRows.length > 0
                   ? responseRows
@@ -495,19 +523,13 @@ function ClassClassification() {
                   []
                 ),
                 new MuiDataGridColumn("remark", "Remarks", 100, "text", "center", false, []),
-                new MuiDataGridColumn(
-                  "newClassName",
-                  "NEW CLASS",
-                  100,
-                  "text",
-                  "center",
-                  false,
-                  []
-                ),
+                new MuiDataGridColumn("newClassName", "NEW CLASS", 100, "text", "center", true, []),
               ]}
               getRowId={(row) => row.newGrade + row.studentChineseName}
-              //editMode="row"
-              slots={{ toolbar: CustomizeGridToolBar }}
+              slots={{ toolbar: CustomDataGrid }}
+              slotProps={{
+                toolbar: { responseRows, setResponseRows },
+              }}
               rowModesModel={rowModesModel}
               onRowModesModelChange={handleRowModesModelChange}
               onRowEditStop={handleRowEditStop}
@@ -524,6 +546,11 @@ function ClassClassification() {
 EditToolbar.propTypes = {
   setRows: PropTypes.arrayOf(PropTypes.object).isRequired,
   setRowModesModel: PropTypes.arrayOf(PropTypes.object).isRequired,
+};
+
+CustomDataGrid.propTypes = {
+  responseRows: PropTypes.arrayOf(PropTypes.object).isRequired,
+  setResponseRows: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default ClassClassification;

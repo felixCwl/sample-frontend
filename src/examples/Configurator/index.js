@@ -137,12 +137,12 @@ function Configurator() {
         pb={0.5}
         px={3}
       >
-        <SampleBox>
+        {/* <SampleBox>
           <SampleTypography variant="h5">Material UI Configurator</SampleTypography>
           <SampleTypography variant="body2" color="text">
             See our dashboard options.
           </SampleTypography>
-        </SampleBox>
+        </SampleBox> */}
 
         <Icon
           sx={({ typography: { size }, palette: { dark, white } }) => ({
@@ -163,7 +163,7 @@ function Configurator() {
 
       <SampleBox pt={0.5} pb={3} px={3}>
         <SampleBox>
-          <SampleTypography variant="h6">Sidenav Colors</SampleTypography>
+          <SampleTypography variant="h6">Side Menu Colors</SampleTypography>
 
           <SampleBox mb={0.5}>
             {sidenavColors.map((color) => (
@@ -209,7 +209,7 @@ function Configurator() {
         </SampleBox>
 
         <SampleBox mt={3} lineHeight={1}>
-          <SampleTypography variant="h6">Sidenav Type</SampleTypography>
+          <SampleTypography variant="h6">Side Menu Style</SampleTypography>
           <SampleTypography variant="button" color="text">
             Choose between different sidenav types.
           </SampleTypography>
@@ -267,7 +267,7 @@ function Configurator() {
             </SampleButton>
           </SampleBox>
         </SampleBox>
-        <SampleBox
+        {/* <SampleBox
           display="flex"
           justifyContent="space-between"
           alignItems="center"
@@ -277,7 +277,7 @@ function Configurator() {
           <SampleTypography variant="h6">Navbar Fixed</SampleTypography>
 
           <Switch checked={fixedNavbar} onChange={handleFixedNavbar} />
-        </SampleBox>
+        </SampleBox> */}
         <Divider />
         <SampleBox display="flex" justifyContent="space-between" alignItems="center" lineHeight={1}>
           <SampleTypography variant="h6">Light / Dark</SampleTypography>
