@@ -26,27 +26,6 @@ const randomRole = () => {
   return randomArrayItem(roles);
 };
 
-function EditToolbar(props) {
-  const { setRows, setRowModesModel } = props;
-
-  const handleClick = () => {
-    const id = randomId();
-    setRows((oldRows) => [...oldRows, { id, name: "", age: "", isNew: true }]);
-    setRowModesModel((oldModel) => ({
-      ...oldModel,
-      [id]: { mode: GridRowModes.Edit, fieldToFocus: "name" },
-    }));
-  };
-
-  return (
-    <GridToolbarContainer>
-      <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-        Add record
-      </Button>
-    </GridToolbarContainer>
-  );
-}
-
 function MuiDataGridRoot({ inputRows, inputColumns }) {
   const [rows, setRows] = React.useState(inputRows);
   const [rowModesModel, setRowModesModel] = React.useState({});
@@ -128,11 +107,6 @@ function MuiDataGridRoot({ inputRows, inputColumns }) {
     </Box>
   );
 }
-
-EditToolbar.propTypes = {
-  setRows: PropTypes.arrayOf(PropTypes.object).isRequired,
-  setRowModesModel: PropTypes.arrayOf(PropTypes.object).isRequired,
-};
 
 MuiDataGridRoot.propTypes = {
   inputRows: PropTypes.arrayOf(PropTypes.object).isRequired,

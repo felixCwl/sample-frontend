@@ -83,17 +83,19 @@ function CustomDataGrid(props) {
       <GridToolbarColumnsButton />
       <GridToolbarFilterButton />
       <GridToolbarDensitySelector slotProps={{ tooltip: { title: "Change density" } }} />
-      <GridToolbarExport
+      {/* <GridToolbarExport
         csvOptions={{
           encoding: "utf-8-bom",
         }}
-      />
+      /> */}
       {/* <Button onClick={downloadCsv}>
         <Icon>download</Icon>
       </Button> */}
       {
         <CSVLink onClick={downloadCsv} data={csvData} filename="export.csv" encoding="utf-8">
-          Download
+          <Button>
+            <Icon>download</Icon>Download
+          </Button>
         </CSVLink>
       }
     </GridToolbarContainer>
@@ -116,10 +118,10 @@ function CustomToolbar() {
           download
         </Icon>
         Download
+        <CSVLink data={csvData} filename="export.csv" encoding="utf-8">
+          Download CSV
+        </CSVLink>
       </Button>
-      <CSVLink data={csvData} filename="export.csv" encoding="utf-8">
-        Download CSV
-      </CSVLink>
     </GridToolbarContainer>
   );
 }
@@ -542,11 +544,6 @@ function ClassClassification() {
     </DashboardLayout>
   );
 }
-
-EditToolbar.propTypes = {
-  setRows: PropTypes.arrayOf(PropTypes.object).isRequired,
-  setRowModesModel: PropTypes.arrayOf(PropTypes.object).isRequired,
-};
 
 CustomDataGrid.propTypes = {
   responseRows: PropTypes.arrayOf(PropTypes.object).isRequired,
