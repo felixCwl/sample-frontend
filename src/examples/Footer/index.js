@@ -6,7 +6,7 @@ import SampleTypography from "components/SampleTypography";
 import typography from "assets/theme/base/typography";
 
 function Footer({ company, links }) {
-  const { href, name } = company;
+  //const { href, name } = company;
   const { size } = typography;
 
   const renderLinks = () =>
@@ -40,7 +40,7 @@ function Footer({ company, links }) {
       >
         &copy; {new Date().getFullYear()}
       </SampleBox>
-      <SampleBox
+      {/* <SampleBox
         component="ul"
         sx={({ breakpoints }) => ({
           display: "flex",
@@ -58,14 +58,13 @@ function Footer({ company, links }) {
         })}
       >
         {renderLinks()}
-      </SampleBox>
+      </SampleBox> */}
     </SampleBox>
   );
 }
 
 // Setting default values for the props of Footer
 Footer.defaultProps = {
-  company: { href: "https://www.creative-tim.com/", name: "Creative Tim" },
   links: [
     { href: "http://localhost:3000/", name: "About Us" },
     { href: "http://localhost:3000/", name: "Blog" },

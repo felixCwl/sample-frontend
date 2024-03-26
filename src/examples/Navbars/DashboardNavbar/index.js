@@ -139,10 +139,10 @@ function DashboardNavbar({ absolute, light, isMini }) {
         </SampleBox>
         {isMini ? null : (
           <SampleBox sx={(theme) => navbarRow(theme, { isMini })}>
-            <SampleBox pr={1}>
+            {/* <SampleBox pr={1}>
               <SampleInput label="Search here" />
-            </SampleBox>
-            <SampleBox color={light ? "white" : "inherit"}>
+            </SampleBox> */}
+            {/* <SampleBox color={light ? "white" : "inherit"}>
               <IconButton
                 size="small"
                 disableRipple
@@ -166,7 +166,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
               {
                 //renderMenu()
               }
-            </SampleBox>
+            </SampleBox> */}
           </SampleBox>
         )}
       </Toolbar>

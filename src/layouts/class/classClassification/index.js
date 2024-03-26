@@ -1,20 +1,14 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRef } from "react";
 import { CSVLink } from "react-csv";
 
 // @mui material components
 import Grid from "@mui/material/Grid";
-import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import AddIcon from "@mui/icons-material/Add";
 
 // sample React components
-import SampleBox from "components/SampleBox";
-import SampleTypography from "components/SampleTypography";
-import SampleAlert from "components/SampleAlert";
 import SampleButton from "components/SampleButton";
-import SampleSnackbar from "components/SampleSnackbar";
 import { FileUploader } from "components/FileUploader";
 
 // sample React example components
@@ -24,37 +18,20 @@ import Footer from "examples/Footer";
 import ClassClassificationRequestModel from "components/request/classClassification/ClassClassificationRequestModel";
 import ClassGradeExpectedInputModel from "components/request/classClassification/ClassGradeExpectedInputModel";
 import { Container, Icon } from "@mui/material";
-import DataTable from "components/Table/TableRoot";
-import TableCustomeColumn from "components/Table/TableCustomeColumn";
-import MuiDataGridRoot from "components/Table/muiDataGrid/MuiDataGridRoot";
 import MuiDataGridColumn from "components/Table/muiDataGrid/MuiDataGridColumn";
 import PropTypes from "prop-types";
 import { useMaterialUIController } from "context";
 import {
+  GridCellModes,
   GridRowModes,
   DataGrid,
-  GridToolbar,
   GridToolbarContainer,
-  GridCsvExportOptions,
   GridToolbarExport,
-  GridActionsCellItem,
   GridRowEditStopReasons,
   GridToolbarColumnsButton,
   GridToolbarFilterButton,
   GridToolbarDensitySelector,
 } from "@mui/x-data-grid";
-import {
-  randomCreatedDate,
-  randomTraderName,
-  randomId,
-  randomArrayItem,
-} from "@mui/x-data-grid-generator";
-import classGradeExpectedInputMap from "components/request/classClassification/ClassGradeExpectedInputModel";
-
-const roles = ["Market", "Finance", "Development"];
-const randomRole = () => {
-  return randomArrayItem(roles);
-};
 
 function CustomDataGrid(props) {
   const { responseRows, setResponseRows } = props;
@@ -103,14 +80,6 @@ function CustomDataGrid(props) {
       <GridToolbarColumnsButton />
       <GridToolbarFilterButton />
       <GridToolbarDensitySelector slotProps={{ tooltip: { title: "Change density" } }} />
-      {/* <GridToolbarExport
-        csvOptions={{
-          encoding: "utf-8-bom",
-        }}
-      /> */}
-      {/* <Button onClick={downloadCsv}>
-        <Icon>download</Icon>
-      </Button> */}
       {
         <CSVLink onClick={downloadCsv} data={csvData} filename="export.csv" encoding="utf-8">
           <Button>
@@ -118,30 +87,6 @@ function CustomDataGrid(props) {
           </Button>
         </CSVLink>
       }
-    </GridToolbarContainer>
-  );
-}
-
-function CustomToolbar() {
-  return (
-    <GridToolbarContainer>
-      <GridToolbarColumnsButton />
-      <GridToolbarFilterButton />
-      <GridToolbarDensitySelector slotProps={{ tooltip: { title: "Change density" } }} />
-      <GridToolbarExport
-        csvOptions={{
-          encoding: "utf-8-bom",
-        }}
-      />
-      <Button onClick={console.log()}>
-        <Icon fontSize="medium" color="inherit">
-          download
-        </Icon>
-        Download
-        <CSVLink data={csvData} filename="export.csv" encoding="utf-8">
-          Download CSV
-        </CSVLink>
-      </Button>
     </GridToolbarContainer>
   );
 }
@@ -236,42 +181,42 @@ function ClassClassification() {
       grade: "1",
       numberOfClass: classOutputNumberArray[0],
       firstClassName: "A",
-      rankLimit: rankLimitNumberArray[0],
+      rankLimit: rankLimitNumberArray[49],
     },
     {
       id: 2,
       grade: "2",
       numberOfClass: classOutputNumberArray[0],
       firstClassName: "A",
-      rankLimit: rankLimitNumberArray[0],
+      rankLimit: rankLimitNumberArray[49],
     },
     {
       id: 3,
       grade: "3",
       numberOfClass: classOutputNumberArray[0],
       firstClassName: "A",
-      rankLimit: rankLimitNumberArray[0],
+      rankLimit: rankLimitNumberArray[49],
     },
     {
       id: 4,
       grade: "4",
       numberOfClass: classOutputNumberArray[0],
       firstClassName: "A",
-      rankLimit: rankLimitNumberArray[0],
+      rankLimit: rankLimitNumberArray[49],
     },
     {
       id: 5,
       grade: "5",
       numberOfClass: classOutputNumberArray[0],
       firstClassName: "A",
-      rankLimit: rankLimitNumberArray[0],
+      rankLimit: rankLimitNumberArray[49],
     },
     {
       id: 6,
       grade: "6",
       numberOfClass: classOutputNumberArray[0],
       firstClassName: "A",
-      rankLimit: rankLimitNumberArray[0],
+      rankLimit: rankLimitNumberArray[49],
     },
   ];
 
@@ -362,7 +307,49 @@ function ClassClassification() {
     console.log(responseRows);
   };
 
-  const downloadCvs = () => {};
+  const [cellModesModel, setCellModesModel] = useState({});
+
+  const handleCellModesModelChange = useCallback((newModel) => {
+    setCellModesModel(newModel);
+  }, []);
+
+  const handleCellClick = useCallback((params, event) => {
+    if (!params.isEditable) {
+      return;
+    }
+
+    // Ignore portal
+    if (event.target.nodeType === 1 && !event.currentTarget.contains(event.target)) {
+      return;
+    }
+
+    setCellModesModel((prevModel) => {
+      return {
+        // Revert the mode of the other cells from other rows
+        ...Object.keys(prevModel).reduce(
+          (acc, id) => ({
+            ...acc,
+            [id]: Object.keys(prevModel[id]).reduce(
+              (acc2, field) => ({
+                ...acc2,
+                [field]: { mode: GridCellModes.View },
+              }),
+              {}
+            ),
+          }),
+          {}
+        ),
+        [params.id]: {
+          // Revert the mode of other cells in the same row
+          ...Object.keys(prevModel[params.id] || {}).reduce(
+            (acc, field) => ({ ...acc, [field]: { mode: GridCellModes.View } }),
+            {}
+          ),
+          [params.field]: { mode: GridCellModes.Edit },
+        },
+      };
+    });
+  }, []);
 
   return (
     <DashboardLayout>
@@ -435,11 +422,15 @@ function ClassClassification() {
                   rankLimitNumberArray
                 ),
               ]}
-              //editMode="row"
               rowModesModel={rowModesModel}
               onRowModesModelChange={handleRowModesModelChange}
               onRowEditStop={handleRowEditStop}
+              cellModesModel={cellModesModel}
+              onCellModesModelChange={handleCellModesModelChange}
+              onCellClick={handleCellClick}
               processRowUpdate={processRowUpdate}
+              hideFooterPagination={true}
+              hideFooter={true}
             />
           </Box>
         </Grid>
@@ -545,17 +536,27 @@ function ClassClassification() {
                   []
                 ),
                 new MuiDataGridColumn("remark", "Remarks", 100, "text", "center", false, []),
-                new MuiDataGridColumn("newClassName", "NEW CLASS", 100, "text", "center", true, []),
+                new MuiDataGridColumn(
+                  "newClassName",
+                  "NEW CLASS",
+                  100,
+                  "text",
+                  "center",
+                  false,
+                  []
+                ),
               ]}
               getRowId={(row) => row.newGrade + row.studentChineseName}
               slots={{ toolbar: CustomDataGrid }}
               slotProps={{
                 toolbar: { responseRows, setResponseRows },
               }}
-              rowModesModel={rowModesModel}
-              onRowModesModelChange={handleRowModesModelChange}
-              onRowEditStop={handleRowEditStop}
-              processRowUpdate={processRowUpdate}
+              // rowModesModel={rowModesModel}
+              // onRowModesModelChange={handleRowModesModelChange}
+              // onRowEditStop={handleRowEditStop}
+              // processRowUpdate={processRowUpdate}
+              // editMode="cell"
+              rowSelection={false}
             />
           </Box>
         </Grid>

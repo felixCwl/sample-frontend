@@ -6,15 +6,17 @@ class MuiDataGridColumn {
     type = "",
     align = "center",
     editable = false,
-    valueOptions = []
+    valueOptions = [],
+    editCellProps = {}
   ) {
-    this.field = field;
+    this.mode = this.field = field;
     this.headerName = headerName;
     this.width = width;
     this.type = type;
     this.align = align;
     this.editable = editable;
     this.valueOptions = valueOptions;
+    this.editCellProps = editCellProps;
   }
 }
 
