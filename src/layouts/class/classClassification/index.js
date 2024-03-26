@@ -61,21 +61,41 @@ function CustomDataGrid(props) {
   const [csvData, setCsvData] = useState([]);
 
   const downloadCsv = () => {
-    const formattedData = responseRows.map((row) => ({
-      // Map the row data to match the CSV format
-      CLASS: row.className,
-      "CLASS NO": row.classNumber,
-      eng_name: row.studentEnglishName,
-      chi_name: row.studentChineseName,
-      sex: row.sex,
-      "2_discip": row.studentDisciple,
-      "3_rank_class": row.studentClassRank,
-      "3_rank_all": row.studentGradeRank,
-      Remarks: row.remark,
-      "NEW CLASS": row.newClassName,
-      // Map other fields as needed
-    }));
-    setCsvData(formattedData);
+    if (!responseRows || responseRows.length > 0) {
+      const formattedData = responseRows.map((row) => ({
+        // Map the row data to match the CSV format
+        CLASS: row.className,
+        "CLASS NO": row.classNumber,
+        eng_name: row.studentEnglishName,
+        chi_name: row.studentChineseName,
+        sex: row.sex,
+        "2_discip": row.studentDisciple,
+        "3_rank_class": row.studentClassRank,
+        "3_rank_all": row.studentGradeRank,
+        Remarks: row.remark,
+        "NEW CLASS": row.newClassName,
+        // Map other fields as needed
+      }));
+      setCsvData(formattedData);
+    } else {
+      const emptyDataString = [
+        {
+          // Map the row data to match the CSV format
+          CLASS: "",
+          "CLASS NO": "",
+          eng_name: "",
+          chi_name: "",
+          sex: "",
+          "2_discip": "",
+          "3_rank_class": "",
+          "3_rank_all": "",
+          Remarks: "",
+          "NEW CLASS": "",
+          // Map other fields as needed
+        },
+      ];
+      setCsvData(emptyDataString);
+    }
   };
 
   return (
