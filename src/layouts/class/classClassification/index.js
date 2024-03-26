@@ -546,7 +546,14 @@ function ClassClassification() {
                   []
                 ),
               ]}
-              getRowId={(row) => row.newGrade + row.studentChineseName}
+              getRowId={(row) =>
+                row.newGrade +
+                row.newClassName +
+                row.studentEnglishName +
+                row.studentGradeRank +
+                row.grade +
+                row.className
+              }
               slots={{ toolbar: CustomDataGrid }}
               slotProps={{
                 toolbar: { responseRows, setResponseRows },
