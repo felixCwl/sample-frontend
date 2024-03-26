@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRef } from "react";
 import { CSVLink } from "react-csv";
 
@@ -32,10 +32,16 @@ import {
   GridToolbarFilterButton,
   GridToolbarDensitySelector,
 } from "@mui/x-data-grid";
+import React from "react";
+import { saveAs } from "file-saver";
+import * as XLSX from "xlsx";
 
 function CustomDataGrid(props) {
   const { responseRows, setResponseRows } = props;
   const [csvData, setCsvData] = useState([]);
+  useEffect(() => {
+    downloadCsv();
+  }, [responseRows]);
 
   const downloadCsv = () => {
     if (!responseRows || responseRows.length > 0) {
@@ -45,7 +51,7 @@ function CustomDataGrid(props) {
         "CLASS NO": row.classNumber,
         eng_name: row.studentEnglishName,
         chi_name: row.studentChineseName,
-        sex: row.sex,
+        sex: row.studentGender,
         "2_discip": row.studentDisciple,
         "3_rank_class": row.studentClassRank,
         "3_rank_all": row.studentGradeRank,
@@ -75,18 +81,31 @@ function CustomDataGrid(props) {
     }
   };
 
+  const exportToExcel = async () => {
+    downloadCsv();
+    const worksheet = XLSX.utils.json_to_sheet(csvData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(blob, `export.xlsx`);
+  };
+
   return (
     <GridToolbarContainer>
       <GridToolbarColumnsButton />
       <GridToolbarFilterButton />
       <GridToolbarDensitySelector slotProps={{ tooltip: { title: "Change density" } }} />
-      {
-        <CSVLink onClick={downloadCsv} data={csvData} filename="export.csv" encoding="utf-8">
+      <Button onClick={exportToExcel}>
+        <Icon>download</Icon>Download
+      </Button>
+      {/* {
+        <CSVLink onClick={downloadCsv} data={csvData} filename="export.xlsx" encoding="utf-8">
           <Button>
             <Icon>download</Icon>Download
           </Button>
         </CSVLink>
-      }
+      } */}
     </GridToolbarContainer>
   );
 }
