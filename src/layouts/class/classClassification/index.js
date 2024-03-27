@@ -1,6 +1,4 @@
 import { useState, useCallback, useEffect } from "react";
-import { useRef } from "react";
-import { CSVLink } from "react-csv";
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -17,7 +15,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import ClassClassificationRequestModel from "components/request/classClassification/ClassClassificationRequestModel";
 import ClassGradeExpectedInputModel from "components/request/classClassification/ClassGradeExpectedInputModel";
-import { Container, Icon } from "@mui/material";
+import { Container, Icon, Alert, AlertTitle } from "@mui/material";
 import MuiDataGridColumn from "components/Table/muiDataGrid/MuiDataGridColumn";
 import PropTypes from "prop-types";
 import { useMaterialUIController } from "context";
@@ -26,7 +24,6 @@ import {
   GridRowModes,
   DataGrid,
   GridToolbarContainer,
-  GridToolbarExport,
   GridRowEditStopReasons,
   GridToolbarColumnsButton,
   GridToolbarFilterButton,
@@ -35,6 +32,16 @@ import {
 import React from "react";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
+
+function ShowPopupMsg(props) {
+  const { message, setMessage } = props;
+  return (
+    <Alert severity="success">
+      <AlertTitle>Success</AlertTitle>
+      This is a success Alert with an encouraging title.
+    </Alert>
+  );
+}
 
 function CustomDataGrid(props) {
   const { responseRows, setResponseRows } = props;
@@ -99,13 +106,6 @@ function CustomDataGrid(props) {
       <Button onClick={exportToExcel}>
         <Icon>download</Icon>Download
       </Button>
-      {/* {
-        <CSVLink onClick={downloadCsv} data={csvData} filename="export.xlsx" encoding="utf-8">
-          <Button>
-            <Icon>download</Icon>Download
-          </Button>
-        </CSVLink>
-      } */}
     </GridToolbarContainer>
   );
 }
@@ -118,6 +118,29 @@ function ClassClassification() {
   const classOutputNumberArray = [];
   const classOutputNameArray = [];
   const rankLimitNumberArray = [];
+  const [openAlert, setOpenAlert] = useState(false);
+  const [alertSeverity, setAlertSeverity] = useState("info");
+  const [alertMessage, setAlertMessage] = useState("");
+
+  useEffect(() => {
+    if (openAlert) {
+      const timer = setTimeout(() => {
+        setOpenAlert(false);
+      }, 4000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [openAlert]);
+
+  const handleAlertClose = () => {
+    setOpenAlert(false);
+  };
+
+  const setAlertMessageContent = (selectedSeverity, customMessage) => {
+    setAlertSeverity(selectedSeverity);
+    setAlertMessage(customMessage);
+    setOpenAlert(true);
+  };
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -156,13 +179,11 @@ function ClassClassification() {
   };
 
   const handleRowModesModelChange = (newRowModesModel) => {
-    console.log(rowModesModel);
     setRowModesModel(newRowModesModel);
   };
 
   const handleButtonClick = (event) => {
     // Handle the button click event
-    console.log(rows);
     handleSubmit(event);
   };
 
@@ -189,7 +210,6 @@ function ClassClassification() {
   for (let i = 0; i <= 6; i++) {
     classOutputNameArray.push(String.fromCharCode(65 + i));
   }
-
   for (let i = 1; i <= 50; i++) {
     rankLimitNumberArray.push(i);
   }
@@ -248,6 +268,7 @@ function ClassClassification() {
     if (file) {
       setFile(file);
       setFileName(file.name);
+      setAlertMessageContent("success", "Successfully uploaded file: " + file.name);
     }
   };
 
@@ -306,9 +327,7 @@ function ClassClassification() {
       50,
       "A"
     );
-    console.log(classDivisionRequestBody);
     var blob = new Blob([JSON.stringify(classDivisionRequestBody)], { type: "application/json" });
-    console.log(blob);
     formdata.append("classDivisionRequest", blob);
     formdata.append("file", file);
     var requestOptions = {
@@ -320,8 +339,9 @@ function ClassClassification() {
       .then((result) => {
         console.log(result);
         setResponseRows(JSON.parse(result));
+        setAlertMessageContent("success", "Successfully generate data from uploaded file!");
       })
-      .catch((error) => console.log(error));
+      .catch((error) => setAlertMessageContent("warning", error.message));
 
     console.log(responseRows);
   };
@@ -406,7 +426,6 @@ function ClassClassification() {
               rows={rows}
               sx={{
                 "& .MuiDataGrid-columnHeader, & .MuiDataGrid-cell": {
-                  //backgroundColor: "blue",
                   color: darkMode ? "grey" : "secondary",
                   fontWeight: 700,
                 },
@@ -447,6 +466,7 @@ function ClassClassification() {
               cellModesModel={cellModesModel}
               onCellModesModelChange={handleCellModesModelChange}
               onCellClick={handleCellClick}
+              rowFocusOut={handleCellModesModelChange}
               processRowUpdate={processRowUpdate}
               hideFooterPagination={true}
               hideFooter={true}
@@ -577,16 +597,24 @@ function ClassClassification() {
               slotProps={{
                 toolbar: { responseRows, setResponseRows },
               }}
-              // rowModesModel={rowModesModel}
-              // onRowModesModelChange={handleRowModesModelChange}
-              // onRowEditStop={handleRowEditStop}
-              // processRowUpdate={processRowUpdate}
-              // editMode="cell"
               rowSelection={false}
             />
           </Box>
         </Grid>
       </Grid>
+      <div
+        style={{ position: "fixed", right: "50px", bottom: "150px", width: "15%", height: "5%" }}
+      >
+        <Alert
+          severity={alertSeverity}
+          //onClose={handleAlertClose}
+          sx={{ marginTop: "1rem", display: openAlert ? "block" : "none" }}
+        >
+          {alertMessage}
+          {/* <AlertTitle>{alertSeverity.charAt(0).toUpperCase() + alertSeverity.slice(1)}</AlertTitle>
+          {alertMessage} */}
+        </Alert>
+      </div>
       <Footer />
     </DashboardLayout>
   );
@@ -595,6 +623,11 @@ function ClassClassification() {
 CustomDataGrid.propTypes = {
   responseRows: PropTypes.arrayOf(PropTypes.object).isRequired,
   setResponseRows: PropTypes.arrayOf(PropTypes.object).isRequired,
+};
+
+ShowPopupMsg.propTypes = {
+  message: PropTypes.arrayOf(PropTypes.object).isRequired,
+  setMessage: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default ClassClassification;
