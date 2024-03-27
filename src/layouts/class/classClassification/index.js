@@ -603,7 +603,7 @@ function ClassClassification() {
         </Grid>
       </Grid>
       <div
-        style={{ position: "fixed", right: "50px", bottom: "150px", width: "15%", height: "5%" }}
+        style={{ position: "fixed", right: "25px", bottom: "100px", width: "15%", height: "5%" }}
       >
         <Alert
           severity={alertSeverity}
