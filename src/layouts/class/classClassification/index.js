@@ -218,42 +218,42 @@ function ClassClassification() {
     {
       id: 1,
       grade: "1",
-      numberOfClass: classOutputNumberArray[0],
+      numberOfClass: classOutputNumberArray[5],
       firstClassName: "A",
       rankLimit: rankLimitNumberArray[49],
     },
     {
       id: 2,
       grade: "2",
-      numberOfClass: classOutputNumberArray[0],
+      numberOfClass: classOutputNumberArray[5],
       firstClassName: "A",
       rankLimit: rankLimitNumberArray[49],
     },
     {
       id: 3,
       grade: "3",
-      numberOfClass: classOutputNumberArray[0],
+      numberOfClass: classOutputNumberArray[5],
       firstClassName: "A",
       rankLimit: rankLimitNumberArray[49],
     },
     {
       id: 4,
       grade: "4",
-      numberOfClass: classOutputNumberArray[0],
+      numberOfClass: classOutputNumberArray[5],
       firstClassName: "A",
       rankLimit: rankLimitNumberArray[49],
     },
     {
       id: 5,
       grade: "5",
-      numberOfClass: classOutputNumberArray[0],
+      numberOfClass: classOutputNumberArray[5],
       firstClassName: "A",
       rankLimit: rankLimitNumberArray[49],
     },
     {
       id: 6,
       grade: "6",
-      numberOfClass: classOutputNumberArray[0],
+      numberOfClass: classOutputNumberArray[4],
       firstClassName: "A",
       rankLimit: rankLimitNumberArray[49],
     },
@@ -350,6 +350,35 @@ function ClassClassification() {
 
   const handleCellModesModelChange = useCallback((newModel) => {
     setCellModesModel(newModel);
+  }, []);
+
+  const handleCellEditStop = useCallback((params, event) => {
+    setCellModesModel((newModel) => {
+      return {
+        // Revert the mode of the other cells from other rows
+        ...Object.keys(newModel).reduce(
+          (acc, id) => ({
+            ...acc,
+            [id]: Object.keys(newModel[id]).reduce(
+              (acc2, field) => ({
+                ...acc2,
+                [field]: { mode: GridCellModes.View },
+              }),
+              {}
+            ),
+          }),
+          {}
+        ),
+        [params.id]: {
+          // Revert the mode of other cells in the same row
+          ...Object.keys(newModel[params.id] || {}).reduce(
+            (acc, field) => ({ ...acc, [field]: { mode: GridCellModes.View } }),
+            {}
+          ),
+          [params.field]: { mode: GridCellModes.View },
+        },
+      };
+    });
   }, []);
 
   const handleCellClick = useCallback((params, event) => {
@@ -466,7 +495,7 @@ function ClassClassification() {
               cellModesModel={cellModesModel}
               onCellModesModelChange={handleCellModesModelChange}
               onCellClick={handleCellClick}
-              rowFocusOut={handleCellModesModelChange}
+              onCellEditStop={handleCellEditStop}
               processRowUpdate={processRowUpdate}
               hideFooterPagination={true}
               hideFooter={true}
