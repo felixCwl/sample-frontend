@@ -102,7 +102,7 @@ function CustomDataGrid(props) {
     <GridToolbarContainer>
       <GridToolbarColumnsButton />
       <GridToolbarFilterButton />
-      <GridToolbarDensitySelector slotProps={{ tooltip: { title: "Change density" } }} />
+      <GridToolbarDensitySelector />
       <Button onClick={exportToExcel}>
         <Icon>download</Icon>Download
       </Button>
@@ -132,10 +132,6 @@ function ClassClassification() {
     }
   }, [openAlert]);
 
-  const handleAlertClose = () => {
-    setOpenAlert(false);
-  };
-
   const setAlertMessageContent = (selectedSeverity, customMessage) => {
     setAlertSeverity(selectedSeverity);
     setAlertMessage(customMessage);
@@ -145,30 +141,6 @@ function ClassClassification() {
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true;
-    }
-  };
-
-  const handleEditClick = (id) => () => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
-  };
-
-  const handleSaveClick = (id) => () => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
-  };
-
-  const handleDeleteClick = (id) => () => {
-    setRows(rows.filter((row) => row.id !== id));
-  };
-
-  const handleCancelClick = (id) => () => {
-    setRowModesModel({
-      ...rowModesModel,
-      [id]: { mode: GridRowModes.View, ignoreModifications: true },
-    });
-
-    const editedRow = rows.find((row) => row.id === id);
-    if (editedRow.isNew) {
-      setRows(rows.filter((row) => row.id !== id));
     }
   };
 
@@ -274,59 +246,23 @@ function ClassClassification() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    var myHeaders = new Headers();
-    //myHeaders.append("Content-Type", "application/json");
-    myHeaders.append("Accept", "*/*");
-    //myHeaders.append("Content-Type", "text/plain");
-    myHeaders.append("Content-Type", "multipart/form-data");
+    var header = new Headers();
+    header.append("Accept", "*/*");
+    header.append("Content-Type", "multipart/form-data");
     var formdata = new FormData();
-    var grade1ExpectedInputMap = new ClassGradeExpectedInputModel(
-      rows[0].numberOfClass,
-      rows[0].firstClassName,
-      rows[0].rankLimit
-    );
+    var inputMap = {};
+    for (var i = 0; i < rows.length; i++) {
+      var gradeExpectedInputMap = new ClassGradeExpectedInputModel(
+        rows[i].numberOfClass,
+        rows[i].firstClassName,
+        rows[i].rankLimit
+      );
 
-    var grade2ExpectedInputMap = new ClassGradeExpectedInputModel(
-      rows[1].numberOfClass,
-      rows[1].firstClassName,
-      rows[1].rankLimit
-    );
+      inputMap[i + 1] = gradeExpectedInputMap;
+    }
 
-    var grade3ExpectedInputMap = new ClassGradeExpectedInputModel(
-      rows[2].numberOfClass,
-      rows[2].firstClassName,
-      rows[2].rankLimit
-    );
-    var grade4ExpectedInputMap = new ClassGradeExpectedInputModel(
-      rows[3].numberOfClass,
-      rows[3].firstClassName,
-      rows[3].rankLimit
-    );
+    var classDivisionRequestBody = new ClassClassificationRequestModel(inputMap);
 
-    var grade5ExpectedInputMap = new ClassGradeExpectedInputModel(
-      rows[4].numberOfClass,
-      rows[4].firstClassName,
-      rows[4].rankLimit
-    );
-
-    var grade6ExpectedInputMap = new ClassGradeExpectedInputModel(
-      rows[5].numberOfClass,
-      rows[5].firstClassName,
-      rows[5].rankLimit
-    );
-
-    var classDivisionRequestBody = new ClassClassificationRequestModel(
-      {
-        1: grade1ExpectedInputMap,
-        2: grade2ExpectedInputMap,
-        3: grade3ExpectedInputMap,
-        4: grade4ExpectedInputMap,
-        5: grade5ExpectedInputMap,
-        6: grade6ExpectedInputMap,
-      },
-      50,
-      "A"
-    );
     var blob = new Blob([JSON.stringify(classDivisionRequestBody)], { type: "application/json" });
     formdata.append("classDivisionRequest", blob);
     formdata.append("file", file);
@@ -337,7 +273,7 @@ function ClassClassification() {
     fetch("http://localhost:8086/class-division/generateClassDivisionResult", requestOptions)
       .then((response) => response.text())
       .then((result) => {
-        console.log(result);
+        //console.log(result);
         setResponseRows(JSON.parse(result));
         setAlertMessageContent("success", "Successfully generate data from uploaded file!");
       })
@@ -353,6 +289,15 @@ function ClassClassification() {
   }, []);
 
   const handleCellEditStop = useCallback((params, event) => {
+    if (!params.isEditable) {
+      return;
+    }
+
+    // Ignore portal
+    if (event.target === undefined) {
+      return;
+    }
+
     setCellModesModel((newModel) => {
       return {
         // Revert the mode of the other cells from other rows
@@ -388,6 +333,7 @@ function ClassClassification() {
 
     // Ignore portal
     if (event.target.nodeType === 1 && !event.currentTarget.contains(event.target)) {
+      handleCellEditStop((params, event));
       return;
     }
 
@@ -439,8 +385,9 @@ function ClassClassification() {
           {fileName ? <p>Uploaded file: {fileName}</p> : null}
         </Grid>
         <Grid item xs={3}>
-          <Box
+          {/* <Box
             sx={{
+              justifyContent: "center",
               width: "100%",
               "& .actions": {
                 color: "text.primary",
@@ -449,7 +396,8 @@ function ClassClassification() {
                 color: "text.primary",
               },
             }}
-          >
+          > */}
+          <div style={{ height: 400, width: "100%" }}>
             <DataGrid
               color={darkMode ? "white" : "secondary"}
               rows={rows}
@@ -459,6 +407,7 @@ function ClassClassification() {
                   fontWeight: 700,
                 },
               }}
+              rowSelection={false}
               columns={[
                 new MuiDataGridColumn("grade", "Grade", 100, "text", "center", false, []),
                 new MuiDataGridColumn(
@@ -499,8 +448,12 @@ function ClassClassification() {
               processRowUpdate={processRowUpdate}
               hideFooterPagination={true}
               hideFooter={true}
+              disableColumnFilter={true}
+              disableColumnMenu={true}
+              disableDensitySelector={true}
             />
-          </Box>
+          </div>
+          {/* </Box> */}
         </Grid>
 
         <Grid item xs={3}>
@@ -516,23 +469,28 @@ function ClassClassification() {
         </Grid>
 
         <Grid item xs={3}>
-          <Box
+          {/* <Box
             sx={{
-              width: "100%",
+              width: "102%",
               "& .actions": {
                 color: "text.primary",
               },
               "& .textPrimary": {
                 color: "text.primary",
               },
+              justifyContent: "center",
             }}
-          >
+          > */}
+          <div style={{ height: 300, width: "102%" }}>
             <DataGrid
+              autoHeight
               sx={{
                 "& .MuiDataGrid-columnHeader, & .MuiDataGrid-cell": {
                   //backgroundColor: "blue",
                   color: darkMode ? "grey" : "secondary",
                   fontWeight: 700,
+                  width: "100%",
+                  justifyContent: "center",
                 },
               }}
               color={darkMode ? "white" : "secondary"}
@@ -628,7 +586,8 @@ function ClassClassification() {
               }}
               rowSelection={false}
             />
-          </Box>
+          </div>
+          {/* </Box> */}
         </Grid>
       </Grid>
       <div
