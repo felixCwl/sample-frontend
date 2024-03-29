@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { flushSync } from "react-dom";
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -149,12 +150,14 @@ function ClassClassification() {
   const processRowUpdate = (newRow) => {
     const updatedRow = { ...newRow, isNew: false };
     setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
+    setAllowSubmit(true);
     return updatedRow;
   };
 
   const handleRowModesModelChange = (newRowModesModel) => {
     setRowModesModel(newRowModesModel);
   };
+  const [allowSubmit, setAllowSubmit] = useState(false);
 
   const handleButtonClick = (event) => {
     // Handle the button click event
@@ -242,6 +245,7 @@ function ClassClassification() {
     if (file) {
       setFile(file);
       setFileName(file.name);
+      setAllowSubmit(true);
       setAlertMessageContent("success", "Successfully uploaded file: " + file.name);
     }
   };
@@ -302,13 +306,13 @@ function ClassClassification() {
     // if (!params.isEditable) {
     //   return;
     // }
-
+    setAllowSubmit(false);
     // Ignore portal
-    if (!event) {
+    if (event === undefined) {
       return;
     }
 
-    if (!event.target) {
+    if (event.target === undefined) {
       return;
     }
 
@@ -340,8 +344,11 @@ function ClassClassification() {
     });
   }, []);
 
-  const handleCellClick = useCallback((params, event) => {
+  const handleCellClick = useCallback(async (params, event) => {
+    setAllowSubmit(false);
+
     if (!params.isEditable) {
+      setAllowSubmit(true);
       return;
     }
 
@@ -471,6 +478,7 @@ function ClassClassification() {
                   sortable: false,
                   headerAlign: "center",
                   editable: true,
+                  valueOptions: classOutputNameArray,
                 },
                 {
                   field: "rankLimit",
@@ -512,7 +520,11 @@ function ClassClassification() {
         </Grid>
 
         <Grid item xs={3}>
-          <SampleButton color={sidenavColor} onClick={handleButtonClick} disabled={!file}>
+          <SampleButton
+            color={sidenavColor}
+            onClick={handleButtonClick}
+            disabled={!file || !allowSubmit}
+          >
             Generate
           </SampleButton>
         </Grid>
