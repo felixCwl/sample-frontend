@@ -33,6 +33,7 @@ import {
 import React from "react";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
+import SampleBox from "components/SampleBox";
 
 function ShowPopupMsg(props) {
   const { message, setMessage } = props;
@@ -416,11 +417,11 @@ function ClassClassification() {
                 color: "text.primary",
               },
               "& .textPrimary": {
-                color: "text.primary",
+                color: "text.primary",  
               },
             }}
           > */}
-          <div style={{ height: 400, width: "100%" }}>
+          <div style={{ width: "100%" }}>
             <DataGrid
               color={darkMode ? "white" : "secondary"}
               rows={rows}
@@ -657,7 +658,7 @@ function ClassClassification() {
           {alertMessage} */}
         </Alert>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </DashboardLayout>
   );
 }
