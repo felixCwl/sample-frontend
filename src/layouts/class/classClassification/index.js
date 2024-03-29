@@ -289,12 +289,16 @@ function ClassClassification() {
   }, []);
 
   const handleCellEditStop = useCallback((params, event) => {
-    if (!params.isEditable) {
+    // if (!params.isEditable) {
+    //   return;
+    // }
+
+    // Ignore portal
+    if (!event) {
       return;
     }
 
-    // Ignore portal
-    if (event.target === undefined) {
+    if (!event.target) {
       return;
     }
 
