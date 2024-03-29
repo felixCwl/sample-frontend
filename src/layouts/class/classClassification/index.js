@@ -20,6 +20,7 @@ import MuiDataGridColumn from "components/Table/muiDataGrid/MuiDataGridColumn";
 import PropTypes from "prop-types";
 import { useMaterialUIController } from "context";
 import {
+  GridEditInputCell,
   GridCellModes,
   GridRowModes,
   DataGrid,
@@ -252,6 +253,15 @@ function ClassClassification() {
     var formdata = new FormData();
     var inputMap = {};
     for (var i = 0; i < rows.length; i++) {
+      if (!rows[i].numberOfClass || !rows[i].numberOfClass > 0) {
+        setAlertMessageContent("warning", "Number Of Class not valided");
+        return;
+      }
+
+      if (!rows[i].firstClassName || !classOutputNameArray.includes(rows[i].firstClassName)) {
+        setAlertMessageContent("warning", "New Class Name not valided");
+        return;
+      }
       var gradeExpectedInputMap = new ClassGradeExpectedInputModel(
         rows[i].numberOfClass,
         rows[i].firstClassName,
@@ -273,7 +283,6 @@ function ClassClassification() {
     fetch("http://localhost:8086/class-division/generateClassDivisionResult", requestOptions)
       .then((response) => response.text())
       .then((result) => {
-        //console.log(result);
         setResponseRows(JSON.parse(result));
         setAlertMessageContent("success", "Successfully generate data from uploaded file!");
       })
@@ -369,6 +378,16 @@ function ClassClassification() {
     });
   }, []);
 
+  const rankLimit = (params) => (
+    <GridEditInputCell
+      {...params}
+      inputProps={{
+        max: 10,
+        min: 0,
+      }}
+    />
+  );
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -413,34 +432,64 @@ function ClassClassification() {
               }}
               rowSelection={false}
               columns={[
-                new MuiDataGridColumn("grade", "Grade", 100, "text", "center", false, []),
-                new MuiDataGridColumn(
-                  "numberOfClass",
-                  "Number Of Class",
-                  200,
-                  "singleSelect",
-                  "center",
-                  true,
-                  classOutputNumberArray
-                ),
-                new MuiDataGridColumn(
-                  "firstClassName",
-                  "First Class Name",
-                  200,
-                  "singleSelect",
-                  "center",
-                  true,
-                  classOutputNameArray
-                ),
-                new MuiDataGridColumn(
-                  "rankLimit",
-                  "Rank Limit",
-                  200,
-                  "singleSelect",
-                  "center",
-                  true,
-                  rankLimitNumberArray
-                ),
+                {
+                  field: "grade",
+                  headerName: "Grade",
+                  width: 100,
+                  type: "text",
+                  align: "center",
+                  sortable: false,
+                  headerAlign: "center",
+                  editable: false,
+                },
+                {
+                  field: "numberOfClass",
+                  headerName: "Number Of Class",
+                  width: 200,
+                  type: "number",
+                  align: "center",
+                  sortable: false,
+                  headerAlign: "center",
+                  editable: true,
+                  renderEditCell: (params) => (
+                    <GridEditInputCell
+                      {...params}
+                      inputProps={{
+                        max: 6,
+                        min: 1,
+                      }}
+                    />
+                  ),
+                },
+                {
+                  field: "firstClassName",
+                  headerName: "First Class Name",
+                  width: 200,
+                  type: "singleSelect",
+                  align: "center",
+                  sortable: false,
+                  headerAlign: "center",
+                  editable: true,
+                },
+                {
+                  field: "rankLimit",
+                  headerName: "Rank Limit",
+                  width: 200,
+                  type: "number",
+                  align: "center",
+                  sortable: false,
+                  headerAlign: "center",
+                  editable: true,
+                  renderEditCell: (params) => (
+                    <GridEditInputCell
+                      {...params}
+                      inputProps={{
+                        max: 50,
+                        min: 0,
+                      }}
+                    />
+                  ),
+                },
               ]}
               rowModesModel={rowModesModel}
               onRowModesModelChange={handleRowModesModelChange}
@@ -455,6 +504,7 @@ function ClassClassification() {
               disableColumnFilter={true}
               disableColumnMenu={true}
               disableDensitySelector={true}
+              disableColumnSorting
             />
           </div>
           {/* </Box> */}
